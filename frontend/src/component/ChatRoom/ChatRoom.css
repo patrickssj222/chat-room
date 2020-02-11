@@ -1,0 +1,70 @@
+.chat-room{
+    height:100%;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.chat-room .chat-history{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.chat-room .message-wrapper{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    min-height: 100px;
+    border-top: 1px solid black;
+}
+
+.chat-room .message-wrapper textarea{
+    resize: none;
+    flex: 1;
+    border: none;
+    border-right: 1px solid black;
+}
+
+.chat-room .btn{
+    border-radius: 0;
+    border: none;
+}
+
+.chat-room .message{
+    padding: 20px 20px;
+    max-width: 40%;
+}
+
+.chat-room .self-message{
+    align-self: flex-end;
+}
+
+.chat-room .message .message-title{
+    display: flex;
+    flex-direction: row;
+    padding-left: 5px;
+}
+
+.chat-room .message .message-title .username {
+    padding-right: 10px;
+}
+
+.chat-room .message .message-bubble{
+    margin: 10px 0;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: #007bff;
+    color: white;
+    white-space: pre-wrap;      /* CSS3 */
+    white-space: -moz-pre-wrap; /* Firefox */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    word-wrap: break-word;      /* IE */
+}

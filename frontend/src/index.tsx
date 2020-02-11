@@ -6,10 +6,10 @@ import {Route, Router} from 'dva/router'
 import {createBrowserHistory} from 'history'
 
 import dva from "dva";
-
+/*
 if (process.env.NODE_ENV !== 'development') {
     console.log = () => {}
-}
+}*/
 
 const r = (props: any) => {
     return (

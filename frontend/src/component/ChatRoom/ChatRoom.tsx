@@ -2,15 +2,16 @@ import React, { Component } from 'react';
 import {connect} from "dva";
 import {AppState} from "../../types";
 import socketIOClient from "socket.io-client";
+import "./ChatRoom.css";
+import { animateScroll } from "react-scroll";
 
 interface Props{
     loginError: string
 }
 interface message{
-    [time:string]:{
-        username: string
-        message: string
-    }
+    username: string
+    message: string
+    time: string
 }
 interface State {
     username: string | null
@@ -19,10 +20,11 @@ interface State {
     socket: any
 }
 class ChatRoom extends Component<Props,State> {
+    private  textarea;
     constructor(props){
         super(props);
         this.state={
-            username:null,
+            username:"test",
             message: null,
             message_list:null,
             socket: null
@@ -30,22 +32,40 @@ class ChatRoom extends Component<Props,State> {
     }
     componentDidMount(): void {
         const socket = socketIOClient("localhost:3000");
+        const currentTime = new Date();
+        let preset = [];
+        preset.push({username:"Chat_Helper", message:"Welcome to patrick's chat tool!", time:currentTime});
+        this.setState({
+           message_list:preset
+        });
         socket.on("receive", data=>{
             console.log("received: ", data);
             this.setState((prevState)=>{
-                const list = prevState.message_list;
+                let list = prevState.message_list;
                 list.push(data);
                 return{
                     ...prevState,
                     message_list: list
                 }
-            })
+            });
+            animateScroll.scrollToBottom({
+                containerId: "chat-history",
+                duration:0
+            });
         });
         this.setState({
             socket: socket
-        })
+        });
     }
 
+    handleKeyPress(e){
+        if(e.key==="Enter"){
+            if(!e.shiftKey){
+                e.preventDefault();
+                this.handleSubmit();
+            }
+        }
+    }
     handleChange(e){
         const { name, value } = e.target;
         this.setState((prevState: State)=>{
@@ -56,17 +76,51 @@ class ChatRoom extends Component<Props,State> {
         });
     }
     handleSubmit(){
-        const currentTime = new Date();
-        this.state.socket.emit("send", {currentTime:{username:this.state.username, message: this.state.message}});
+        if(this.state.message){
+            const currentTime = new Date();
+            console.log(this.state.message);
+            const message = this.state.message;
+            this.setState({
+                message:null
+            });
+            this.textarea.value = "";
+            this.textarea.focus();
+            this.state.socket.emit("send", {username:this.state.username, message: message, time:currentTime.toISOString()});
+        }
+
     }
     render() {
+        console.log("message list", this.state.message_list);
         return (
             <div className={"chat-room"}>
-                <div className={"chat-history"}>
+                <div className={"chat-history"} id={"chat-history"}>
+                    {
+                        this.state.message_list?this.state.message_list.map((message)=>{
+                            const time = new Date(message.time);
+                            return(
+                                <div className={`message${message.username===this.state.username?' self-message':''}`}>
+                                    <div className={"message-title"}>
+                                        <small className={"username"}>{message.username}</small>
+                                        <small className={"time"}>{time.toLocaleString()}</small>
+                                    </div>
+                                    <div className={"message-bubble"}>
+                                        {message.message}
+                                    </div>
+                                </div>
+                            )
+                        }):null
+                    }
                 </div>
                 <div className={"message-wrapper"}>
-                    <input type={"text"} name={"message"} value={this.state.message} onChange={this.handleChange.bind(this)}/>
-                    <button onClick={this.handleSubmit.bind(this)}>Send</button>
+                    <textarea
+                        name={"message"}
+                        autoFocus={true}
+                        value={this.state.message}
+                        onChange={this.handleChange.bind(this)}
+                        ref={node => {this.textarea = node;}}
+                        onKeyUp={this.handleKeyPress.bind(this)}
+                    />
+                    <button className={"btn btn-primary btn-lg"} onClick={this.handleSubmit.bind(this)}>Send</button>
                 </div>
             </div>
         );
