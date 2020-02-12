@@ -6,7 +6,9 @@ import "./ChatRoom.css";
 import { animateScroll } from "react-scroll";
 
 interface Props{
-    loginError: string
+    user: string
+    dispatch: any
+    history: any
 }
 interface message{
     username: string
@@ -24,7 +26,7 @@ class ChatRoom extends Component<Props,State> {
     constructor(props){
         super(props);
         this.state={
-            username:"test",
+            username:null,
             message: null,
             message_list:null,
             socket: null
@@ -34,9 +36,10 @@ class ChatRoom extends Component<Props,State> {
         const socket = socketIOClient("localhost:3000");
         const currentTime = new Date();
         let preset = [];
-        preset.push({username:"Chat_Helper", message:"Welcome to patrick's chat tool!", time:currentTime});
+        preset.push({username:"Chat_Helper", message:"Welcome "+this.props.user+" to Patrick's chat tool!", time:currentTime});
         this.setState({
-           message_list:preset
+            username: this.props.user,
+            message_list:preset
         });
         socket.on("receive", data=>{
             console.log("received: ", data);
@@ -89,6 +92,10 @@ class ChatRoom extends Component<Props,State> {
         }
 
     }
+    handleLogOut(){
+        this.props.dispatch({type:"global/saga_log_out"});
+        this.props.history.push("/login");
+    }
     render() {
         console.log("message list", this.state.message_list);
         return (
@@ -122,11 +129,15 @@ class ChatRoom extends Component<Props,State> {
                     />
                     <button className={"btn btn-primary btn-lg"} onClick={this.handleSubmit.bind(this)}>Send</button>
                 </div>
+                <div className={"log-out-wrapper"}>
+                    <button className={"btn btn-primary btn-lg"} onClick={this.handleLogOut.bind(this)}>Log Out</button>
+                </div>
             </div>
         );
     }
 }
 
-const mapStateToProps = (state: AppState) => {
-};
+const mapStateToProps = (state: AppState) => ({
+    user:state.global.user
+});
 export default connect(mapStateToProps)(ChatRoom);

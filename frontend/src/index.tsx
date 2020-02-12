@@ -20,5 +20,6 @@ const r = (props: any) => {
 };
 
 const app = dva({history: createBrowserHistory()});
+app.model(require('./models/global').globalModel);
 app.router(r);
 app.start('#root');

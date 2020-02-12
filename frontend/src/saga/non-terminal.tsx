@@ -8,7 +8,6 @@ export function* login_check(username:string, password:string){
         yield put({type:"global/set_error",payload:null});
         const cookies = new Cookies();
         cookies.set('user', username, { path: '/' });
-        cookies.set('refresh_token', response.data.refresh_token, { path: '/' });
         window.location.href = "localhost:3000";
     }
     else if(response.data&&response.data.error){

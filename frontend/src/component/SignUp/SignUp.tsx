@@ -1,19 +1,17 @@
 import React, { Component } from 'react';
-import './LogIn.css';
+import './SignUp.css';
 import {connect} from "dva";
 import {AppState} from "../../types";
-import {Redirect} from "react-router";
 import {Link} from "react-router-dom";
 interface Props{
-    loginError: string
+    signUpError: string
     dispatch: any
-    history: any
 }
 interface State {
     username: string
     password: string
 }
-class LogIn extends Component<Props,State> {
+class SignUp extends Component<Props,State> {
     constructor(props){
         super(props);
         this.state={
@@ -31,7 +29,7 @@ class LogIn extends Component<Props,State> {
         });
     }
     handleSubmit(){
-        this.props.dispatch({type:"global/saga_check_log_in", payload:{username:this.state.username, password:this.state.password}});
+        this.props.dispatch({type:"global/saga_check_sign_up", payload:{username:this.state.username, password:this.state.password}});
     }
     render() {
         const { username, password } = this.state;
@@ -45,12 +43,12 @@ class LogIn extends Component<Props,State> {
                             <span id="reauth-email" className="reauth-email"/>
                             <input type="text" className="form-control" placeholder="Username" name="username" value={username} onChange={this.handleChange.bind(this)} required autoFocus/>
                             <input type="password" className="form-control" placeholder="Password" name="password" value={password} onChange={this.handleChange.bind(this)} required/>
-                            <button className="btn btn-lg btn-primary btn-block btn-signin" onClick={this.handleSubmit.bind(this)}>Log in</button>
-                            <Link to={"/sign-up"}>
-                                <button className={"btn btn-lg btn-primary btn-block btn-signin"}>Sign Up</button>
+                            <button className="btn btn-lg btn-primary btn-block btn-signin" onClick={this.handleSubmit.bind(this)}>Sign Up</button>
+                            <Link to={"/login"}>
+                                <small style={{textAlign:"center"}}>back to login</small>
                             </Link>
                         </div>
-                        {this.props.loginError && <p className="login-error">{this.props.loginError}</p>}
+                        {this.props.signUpError && <p className="login-error">{this.props.signUpError}</p>}
                     </div>
                 </div>
             </div>
@@ -60,7 +58,7 @@ class LogIn extends Component<Props,State> {
 
 const mapStateToProps = (state: AppState) => {
     return{
-        loginError:state.global.loginError,
+        signUpError:state.global.signUpError,
     };
 };
-export default connect(mapStateToProps)(LogIn);
+export default connect(mapStateToProps)(SignUp);
